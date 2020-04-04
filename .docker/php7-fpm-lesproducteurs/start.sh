@@ -3,7 +3,7 @@ set -e
 
 cd /var/www/LesProducteurs
 if [ ! -f ./config/settings.inc.php ]; then
-	unzip -o /tmp/3.7.6.4.zip
+	unzip -o /tmp/1.7.6.4.zip
 	mkdir -p log
 	chmod +w -R log
 fi

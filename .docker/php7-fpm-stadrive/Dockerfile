@@ -24,22 +24,18 @@ RUN adduser -D -u 10000 -g 'nginx' nginx -h /home/nginx -s /bin/sh \
 	mysql-client netcat-openbsd tcpdump
 RUN pecl channel-update pecl.php.net && pecl install memcached \
  && chmod +x /usr/lib/php7/modules/memcached.so \
- && rm -rf /var/run/php7.pid && mkdir -p /var/log/php7 /var/run/ && touch /var/run/php-fpm7.pid \
- && chown -R nginx:nginx /etc/php7 /var/log/php7 /var/run/php-fpm7.pid
-
-# redirect php logs to stdout
-#&& ln -sf /dev/stdout /var/log/php7/error.log
+ && rm -rf /etc/php7/php7-fpm.conf /var/run/php7.pid /etc/php7/php-fpm.d/www.conf\
+ && touch /var/run/php7-fpm-stadrive.pid \
+ && chown -R nginx:nginx /etc/php7 /var/run/php7-fpm-stadrive.pid
+USER nginx
+RUN wget -O /tmp/${PRESTASHOP_RELEASE}.zip https://github.com/PrestaShop/PrestaShop/releases/download/${PRESTASHOP_RELEASE}/prestashop_${PRESTASHOP_RELEASE}.zip && chmod +r /tmp/${PRESTASHOP_RELEASE}.zip
 
 ADD start.sh /usr/local/bin/start.sh
-RUN sed -Ei "s?__PS_RELEASE__?${PRESTASHOP_RELEASE}?g" /usr/local/bin/start.sh
-COPY conf/php-fpm.conf /etc/php7/
+COPY conf/php-fpm-stadrive.conf /etc/php7/php-fpm.d/
 COPY conf/php-memcached.ini /etc/php7/conf.d/99_memcached.ini
 COPY conf/php-mini.ini /etc/php7/php.ini
 
-ADD --chown=10000:10000 https://github.com/PrestaShop/PrestaShop/releases/download/${PRESTASHOP_RELEASE}/prestashop_${PRESTASHOP_RELEASE}.zip /tmp/${PRESTASHOP_RELEASE}.zip
 ENTRYPOINT ["start.sh"]
-# USER nginx
-WORKDIR ${__DOCUMENT_ROOT__}
-#WORKDIR /var/www/
-EXPOSE ${__FPM_POOL_PORT__}
-CMD ["php-fpm7", "--nodaemonize"]
+WORKDIR /var/www/staDrive
+EXPOSE 9000
+CMD ["php-fpm7", "-O", "--nodaemonize"]

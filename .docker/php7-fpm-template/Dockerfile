@@ -1,5 +1,5 @@
 FROM alpine:3.9
-ARG PRESTASHOP_RELEASE='3.7.6.4'
+ARG PRESTASHOP_RELEASE='__PRESTASHOP_RELEASE__'
 MAINTAINER Benjamin MIXTE <bmixte@agileweb.fr>
 
 # Install nginx
@@ -24,17 +24,18 @@ RUN adduser -D -u 10000 -g 'nginx' nginx -h /home/nginx -s /bin/sh \
 	mysql-client netcat-openbsd tcpdump
 RUN pecl channel-update pecl.php.net && pecl install memcached \
  && chmod +x /usr/lib/php7/modules/memcached.so \
- && rm -rf /var/run/php7.pid && mkdir -p /var/log/php7 /var/run/ && touch /var/run/php-fpm7.pid \
- && chown -R nginx:nginx /etc/php7 /var/log/php7 /var/run/php-fpm7.pid
+ && rm -rf /etc/php7/php7-fpm.conf /var/run/php7.pid /etc/php7/php-fpm.d/www.conf\
+ && touch /var/run/php7-fpm-__SHORT_NAME__.pid \
+ && chown -R nginx:nginx /etc/php7 /var/run/php7-fpm-__SHORT_NAME__.pid
+USER nginx
+RUN wget -O /tmp/${PRESTASHOP_RELEASE}.zip https://github.com/PrestaShop/PrestaShop/releases/download/${PRESTASHOP_RELEASE}/prestashop_${PRESTASHOP_RELEASE}.zip && chmod +r /tmp/${PRESTASHOP_RELEASE}.zip
 
 ADD start.sh /usr/local/bin/start.sh
-COPY conf/php-fpm.conf /etc/php7/
+COPY conf/php-fpm-__SHORT_NAME__.conf /etc/php7/php-fpm.d/
 COPY conf/php-memcached.ini /etc/php7/conf.d/99_memcached.ini
 COPY conf/php-mini.ini /etc/php7/php.ini
 
-ADD --chown=10000:10000 https://github.com/PrestaShop/PrestaShop/releases/download/${PRESTASHOP_RELEASE}/prestashop_${PRESTASHOP_RELEASE}.zip /tmp/${PRESTASHOP_RELEASE}.zip
 ENTRYPOINT ["start.sh"]
-USER nginx
-WORKDIR /var/www/LesProducteurs
-EXPOSE 9001
-CMD ["php-fpm7", "--nodaemonize"]
+WORKDIR __DOCUMENT_ROOT__
+EXPOSE __FPM_POOL_PORT__
+CMD ["php-fpm7", "-O", "--nodaemonize"]

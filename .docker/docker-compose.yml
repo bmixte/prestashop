@@ -3,14 +3,14 @@ services:
  memcached:
   image: memcached:1.6.2
  mariadb:
-  image: benzo96nkg/mariadb:1.0.0
+  image: benzo96nkg/mariadb:1.0.1
   build: mariadb
   env_file:
    - .env
   volumes:
    - /var/lib/mysql:/var/lib/mysql 
  php7-fpm-stadrive:
-  image: benzo96nkg/php7-fpm-stadrive:1.0.0
+  image: benzo96nkg/php7-fpm-stadrive:1.0.1
   build: php7-fpm-stadrive
   volumes:
    - /var/www/:/var/www/
@@ -18,20 +18,27 @@ services:
    - mariadb
    - memcached
  php7-fpm-lesproducteurs:
-  image: benzo96nkg/php7-fpm-lesproducteurs:1.0.0
-  build: php7-fpm
+  image: benzo96nkg/php7-fpm-lesproducteurs:1.0.1
+  build: php7-fpm-lesproducteurs
   volumes:
    - /var/www/:/var/www/
   depends_on:
    - mariadb
    - memcached
- nginx-prestashop:
-  image: benzo96nkg/prestashop:1.0.0
+ php7-fpm-test:
+  image: benzo96nkg/php7-fpm-test:1.0.1
+  build: php7-fpm-test
+  volumes:
+   - /var/www/:/var/www/
+  depends_on:
+   - mariadb
+   - memcached
+ nginx-phpfpm:
+  image: benzo96nkg/nginx-phpfpm:1.0.1
   build: 
-   context: prestashop
+   context: nginx-phpfpm
    args:
     CONFIG_FILE: '.sites.conf'
-    PRESTASHOP_RELEASE: '1.7.6.4'
   ports:
    - "80:8000"
    - "443:4443"
@@ -40,4 +47,3 @@ services:
    - /etc/letsencrypt/:/etc/letsencrypt/
   depends_on:
    - php7-fpm-stadrive
-   - php7-fpm-lesproducteurs

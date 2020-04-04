@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-cd __DOCUMENT_ROOT__
+cd /var/www/staDrive
 if [ ! -f ./config/settings.inc.php ]; then
-	unzip -o /tmp/__PRESTASHOP_RELEASE__.zip
+	unzip -o /tmp/1.7.6.4.zip
 	mkdir -p log
 	chmod +w -R log
 fi
