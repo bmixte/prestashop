@@ -29,7 +29,7 @@ After you have change this file run create_new_fpm_container.sh to generate php7
 
 
 # Launch
-docker compose up
+docker-compose up
 
 Check if all is running well with "docker ps"
 CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS              PORTS                                                   NAMES
@@ -38,4 +38,4 @@ fa78097bb7ed        benzo96nkg/nginx-phpfpm:1.0.1        "nginx -g 'daemon of…
 4f1a2d3277aa        benzo96nkg/mariadb:1.0.1             "/usr/local/bin/star…"   7 weeks ago         Up 5 weeks          3306/tcp                                                docker_mariadb_1
 062d3a089691        memcached:1.6.2                      "docker-entrypoint.s…"   7 weeks ago         Up 5 weeks          11211/tcp                                               docker_memcached_1
 
-stopping : docker compose stop
+stopping : docker-compose down
