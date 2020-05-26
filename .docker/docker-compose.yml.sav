@@ -17,6 +17,14 @@ services:
   depends_on:
    - mariadb
    - memcached
+ php7-fpm-lesproducteurs:
+  image: benzo96nkg/php7-fpm-lesproducteurs:1.0.1
+  build: php7-fpm-lesproducteurs
+  volumes:
+   - /var/www/:/var/www/
+  depends_on:
+   - mariadb
+   - memcached
  nginx-phpfpm:
   image: benzo96nkg/nginx-phpfpm:1.0.1
   build: 
